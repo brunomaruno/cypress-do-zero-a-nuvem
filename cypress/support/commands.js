@@ -23,3 +23,28 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+/* Cypress.Commands.overwrite("type", (originalFn, subject, text, options = {}) => {
+    options = { delay: 0, ...options }; // Define um delay padrão de 100ms, mas permite sobrescrever se necessário
+    return originalFn(subject, text, options);
+  }); */
+   
+
+  Cypress.Commands.add('fillMandatoryFieldsAndSubmit', (data = {
+    firstName: "Primeiro Nome",
+    lastName: "Ultimo Nome",
+    email: "email@emai.com",
+    phone: "1234567890",
+    textao: "Texto grande"
+
+  }) => {
+    cy.get("#firstName").type(data.firstName);
+    cy.get("#lastName").type(data.lastName);
+    cy.get("#email").type(data.email);
+    cy.get("#phone").type(data.phone);
+    
+    
+    cy.get("#open-text-area").type(data.textao, { delay: 0 });
+
+    cy.get('button[type="submit"]').click();
+  })
