@@ -23,6 +23,8 @@ describe("Central de atendimento ao Cliente TAT", () => {
   });
 
   it("Exibe mensagem de erro ao submeter o formulario com um email com formatação invalida", () => {
+    cy.clock();
+
     cy.get("#firstName").type("Bruno Eduardo");
     cy.get("#lastName").type("Maruno");
     cy.get("#email").type("bruno_maruno@.com");
@@ -37,6 +39,9 @@ describe("Central de atendimento ao Cliente TAT", () => {
     cy.get('button[type="submit"]').click();
 
     cy.get(".error").should("be.visible");
+
+    cy.tick(3000);
+    cy.get(".error").should("not.be.visible");
   });
 
   it("Campo telefone continua vazio quando preenchido com um valor nao-numerico", () => {
@@ -44,6 +49,8 @@ describe("Central de atendimento ao Cliente TAT", () => {
   });
 
   it("Exibe mensagem de erro quando telefone se torna obrigatorio mas nao é preenchido", () => {
+    cy.clock();
+
     cy.get("#firstName").type("Bruno Eduardo");
     cy.get("#lastName").type("Maruno");
     cy.get("#email").type("bruno_maruno@.com");
@@ -54,6 +61,10 @@ describe("Central de atendimento ao Cliente TAT", () => {
     );
     cy.get('button[type="submit"]').click();
     cy.get(".error").should("be.visible");
+
+
+    cy.tick(3000);
+    cy.get(".error").should("not.be.visible");
   });
 
   it("Preencha e limpe os campos nome, sobrenome, email e telefone", () => {
@@ -206,7 +217,6 @@ describe("Central de atendimento ao Cliente TAT", () => {
     cy.contains("a", "Política de Privacidade")
       .should("have.attr", "href", "privacy.html")
       .and("have.attr", "target", "_blank");
-    
   });
 
   it("md07 - Acessa a pagina de politica de privacidade removendo o target e então clicando no link", () => {
@@ -215,13 +225,34 @@ describe("Central de atendimento ao Cliente TAT", () => {
       .click();
     cy.url().should("include", "privacy.html");
     cy.contains("h1", "Política de Privacidade").should("be.visible");
-    
   });
 
-  it('md08 - ', () => {
-    
+  it("md12 - Preencha o campo de textarea simulando um control+v", () => {
+    cy.get('#open-text-area').invoke('val', 'Teste de control v no campo de text area').should('have.value', 'Teste de control v no campo de text area').trigger('paste', {clipboardData: 'Teste de control v no campo de text area'})  
+  });
+
+
+  it('md12 - Faz uma requisição HTTP', () => {
+    cy.request({
+      method: 'GET',
+      url: 'https://cac-tat-v3.s3.eu-central-1.amazonaws.com/index.html'
+    }).then( (response) => {
+      console.log(response)
+      expect(response.status).to.eq(200)
+      expect(response.statusText).to.eq('OK')
+      expect(response.body).to.contain('CAC TAT')
+
+    })
+
   })
-  
- 
+
+  it.only('Fazer o gato aparecer', () => {
+    cy.get('#cat').should('not.be.visible').invoke('show').should('be.visible')
+    cy.get('#title').invoke('text', 'CAT TAT')
+  })
+
+
+
+
 
 });
